@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/base.astro'
+import Header from '../components/header.astro'
+import LegacyItem from '../components/legacyItem.astro'
+import { legacyData } from '../../legacy/data.js';
+import { getChannelInfo } from '../lib/telegram'
+
+const channel = await getChannelInfo(Astro)
+
+---
+
+<Layout channel={channel} id="main-container">
+  <slot name="header">
+    <Header channel={channel} />
+  </slot>
+  <div class="items">
+    {legacyData.map(post => <LegacyItem post={post} />)}
+  </div>
+</Layout>

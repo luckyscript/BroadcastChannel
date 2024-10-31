@@ -2,6 +2,8 @@
 import Layout from '../layouts/base.astro'
 import Header from '../components/header.astro'
 import Item from '../components/item.astro'
+import LegacyItem from '../components/legacyItem.astro'
+import { legacyData } from '../../legacy/data.js';
 
 const { SITE_URL } = Astro.locals
 const { channel, before = true, after = true } = Astro.props
@@ -17,8 +19,14 @@ const afterCursor = posts[0]?.id
     <Header channel={channel} />
   </slot>
   <div class="items">
-    {posts.map((post) => <Item post={post} />)}
+    {posts.length ? posts.map((post) => <Item post={post} />) : legacyData.map(post => <LegacyItem post={post} />)}
   </div>
+
+  {
+    <a href={`/legacy`} title="Legacy" class="page">
+      Legacy
+    </a>
+  }
 
   <div class="pages-container">
     {
