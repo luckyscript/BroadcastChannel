@@ -1,0 +1,36 @@
+---
+import Layout from '../../layouts/base.astro'
+import Header from '../../components/header.astro'
+import LegacyItem from '../../components/legacyItem.astro'
+import { legacyData } from '../../../legacy/data.js';
+import { getChannelInfo } from '../../lib/telegram'
+
+const channel = await getChannelInfo(Astro);
+
+const { SITE_URL } = Astro.locals;
+
+const { offset } = Astro.params;
+
+export const prerender = false
+
+---
+
+<Layout channel={channel} id="main-container">
+  <slot name="header">
+    <Header channel={channel} />
+  </slot>
+  <div class="items">
+    {legacyData.slice(Number(offset), Number(offset) + 20).map(post => <LegacyItem post={post} />)}
+  </div>
+
+  <div class="pages-container">
+    { Number(offset) + 20 < legacyData.length &&
+      <a href={`${SITE_URL}legacyBefore/${Number(offset) + 20}`} title="Before" class="page">
+        Before
+      </a>
+    }
+
+    <div class="pages-info"></div>
+  </div>
+</Layout>
+

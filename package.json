@@ -47,12 +47,6 @@
     "simple-git-hooks": "^2.11.1",
     "std-env": "^3.7.0"
   },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
-  },
-  "lint-staged": {
-    "*": "eslint --fix"
-  },
   "browserslist": [
     "defaults"
   ]

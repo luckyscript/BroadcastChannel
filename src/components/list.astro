@@ -11,6 +11,9 @@ const posts = channel.posts ?? []
 
 const beforeCursor = posts[posts.length - 1]?.id
 const afterCursor = posts[0]?.id
+
+const isMixedPage = posts.length < 20;
+const legacyLength = 20 - posts.length;
 // const cursor = +Astro.params.cursor
 ---
 
@@ -19,23 +22,20 @@ const afterCursor = posts[0]?.id
     <Header channel={channel} />
   </slot>
   <div class="items">
-    {posts.length ? posts.map((post) => <Item post={post} />) : legacyData.map(post => <LegacyItem post={post} />)}
+    {posts.map((post) => <Item post={post} />)}
+    {isMixedPage ? legacyData.slice(0, legacyLength).map(post => <LegacyItem post={post} />): null}
   </div>
-
-  {
-    <a href={`/legacy`} title="Legacy" class="page">
-      Legacy
-    </a>
-  }
 
   <div class="pages-container">
     {
-      before && beforeCursor > 1 ? (
+      !isMixedPage && before && beforeCursor > 1 ? (
         <a href={`${SITE_URL}before/${beforeCursor}`} title="Before" class="page">
           Before
         </a>
       ) : (
-        <span class="page-placeholder">&nbsp;</span>
+        <a href={`${SITE_URL}legacyBefore/${legacyLength}`} title="Before" class="page">
+          Before
+        </a>
       )
     }
 
