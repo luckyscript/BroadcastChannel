@@ -49,5 +49,6 @@
   },
   "browserslist": [
     "defaults"
-  ]
+  ],
+  "repository": "git@github.com:luckyscript/BroadcastChannel.git"
 }

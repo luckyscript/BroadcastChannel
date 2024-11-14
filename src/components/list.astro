@@ -1,18 +1,23 @@
 ---
-import Layout from '../layouts/base.astro'
-import Header from '../components/header.astro'
-import Item from '../components/item.astro'
-import LegacyItem from '../components/legacyItem.astro'
-import { legacyData } from '../../legacy/data.js';
+import Layout from "../layouts/base.astro";
+import Header from "../components/header.astro";
+import Item from "../components/item.astro";
+import LegacyItem from "../components/legacyItem.astro";
+import { legacyData } from "../../legacy/data.js";
 
-const { SITE_URL } = Astro.locals
-const { channel, before = true, after = true } = Astro.props
-const posts = channel.posts ?? []
+const { SITE_URL } = Astro.locals;
+const {
+  channel,
+  before = true,
+  after = true,
+  needLegacy = false,
+} = Astro.props;
+const posts = channel.posts ?? [];
 
-const beforeCursor = posts[posts.length - 1]?.id
-const afterCursor = posts[0]?.id
+const beforeCursor = posts[posts.length - 1]?.id;
+const afterCursor = posts[0]?.id;
 
-const isMixedPage = posts.length < 20;
+const isMixedPage = needLegacy && posts.length < 20 && beforeCursor < 6;
 const legacyLength = 20 - posts.length;
 // const cursor = +Astro.params.cursor
 ---
@@ -21,21 +26,36 @@ const legacyLength = 20 - posts.length;
   <slot name="header">
     <Header channel={channel} />
   </slot>
+  <div>beforeCursor: {beforeCursor}</div>
   <div class="items">
-    {posts.map((post) => <Item post={post} />)}
-    {isMixedPage ? legacyData.slice(0, legacyLength).map(post => <LegacyItem post={post} />): null}
+    {posts.map(post => <Item post={post} />)}
+    {
+      isMixedPage
+        ? legacyData
+            .slice(0, legacyLength)
+            .map(post => <LegacyItem post={post} />)
+        : null
+    }
   </div>
 
   <div class="pages-container">
     {
-      !isMixedPage && before && beforeCursor > 1 ? (
-        <a href={`${SITE_URL}before/${beforeCursor}`} title="Before" class="page">
+      before ?  (!isMixedPage ? (
+        <a
+          href={`${SITE_URL}before/${beforeCursor}`}
+          title="Before"
+          class="page">
           Before
         </a>
       ) : (
-        <a href={`${SITE_URL}legacyBefore/${legacyLength}`} title="Before" class="page">
+        <a
+          href={`${SITE_URL}legacyBefore/${legacyLength}`}
+          title="Before"
+          class="page">
           Before
         </a>
+      )) : (
+        <span class="page-placeholder">&nbsp;</span>
       )
     }
 

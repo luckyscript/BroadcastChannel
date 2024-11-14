@@ -7,4 +7,4 @@ const channel = await getChannelInfo(Astro)
 export const prerender = false
 ---
 
-<List channel={channel} after={false} />
+<List channel={channel} after={false} needLegacy={true}/>
