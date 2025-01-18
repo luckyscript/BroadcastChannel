@@ -26,7 +26,6 @@ const legacyLength = 20 - posts.length;
   <slot name="header">
     <Header channel={channel} />
   </slot>
-  <div>beforeCursor: {beforeCursor}</div>
   <div class="items">
     {posts.map(post => <Item post={post} />)}
     {
