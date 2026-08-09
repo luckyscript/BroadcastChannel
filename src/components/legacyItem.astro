@@ -1,41 +1,41 @@
 ---
-import '../assets/item.css'
-import 'prismjs/themes/prism.css'
-import dayjs from '../lib/dayjs'
 import { getEnv } from '../lib/env'
+import { formatPostTime, getTagHref } from '../lib/post-ui'
 
-const locale = getEnv(import.meta.env, Astro, 'LOCALE')
-const timezone = getEnv(import.meta.env, Astro, 'TIMEZONE')
+const locale = getEnv(import.meta.env, 'LOCALE')
+const timezone = getEnv(import.meta.env, 'TIMEZONE')
 
-locale && dayjs.locale(locale)
-
-const { SITE_URL } = Astro.locals
-const { post } = Astro.props
-
-const datetime = dayjs(post.date).tz(timezone)
-const timeago = datetime.isBefore(dayjs().subtract(1, 'w')) ? datetime.format('HH:mm · ll · ddd') : datetime.fromNow()
+const { post } = Astro.props as {
+  post: {
+    date: string
+    html?: string
+    tags?: string[]
+    title: string
+  }
+}
+const timeago = await formatPostTime(post.date, timezone, locale)
+const hasContent = Boolean(post.html?.length)
+const hasTags = Boolean(post.tags?.length)
 ---
 
-<div class="item" style={{ 'view-transition-name': `post-${post.title}` }}>
-  <div class="time-box">
-    <div class="dot"></div>
-    <div class="time">
-      <a title={post.date} class="item-link">
-        <time datetime={post.date} title={timeago}>{timeago}</time>
-      </a>
-    </div>
+<article class="post-entry" style={{ 'view-transition-name': `legacy-post-${post.title}` }}>
+  <div class="post-meta">
+    <span class="timeline-dot" aria-hidden="true"></span>
+    <p>
+      <time datetime={post.date} title={timeago}>{timeago}</time>
+    </p>
   </div>
-  {post.html?.length > 0 && <div class={`text-box content`} set:html={post.html} />}
+  {hasContent && <div class="post-content content" set:html={post.html} />}
   {
-    post.tags?.length > 0 && (
-      <div class="tag-box" style={post.html.length === 0 ? 'padding-top: 30px;' : ''}>
-        <div class="tag-icon" />
+    hasTags && (
+      <p class="tags post-tags">
+        <span class="tag-icon" aria-hidden="true" />
         {post.tags.map((tag) => (
-          <a title={tag} class="tag">
+          <a href={getTagHref(tag)} title={tag}>
             {tag}
           </a>
         ))}
-      </div>
+      </p>
     )
   }
-</div>
+</article>

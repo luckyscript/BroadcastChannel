@@ -1,36 +1,38 @@
 ---
-import Layout from '../../layouts/base.astro'
-import Header from '../../components/header.astro'
+import BaseLayout from '../../layouts/BaseLayout.astro'
 import LegacyItem from '../../components/legacyItem.astro'
-import { legacyData } from '../../../legacy/data.js';
+import { legacyData } from '../../../legacy/data.js'
 import { getChannelInfo } from '../../lib/telegram'
+import type { SeoMeta } from '../../types'
 
-const channel = await getChannelInfo(Astro);
+const channel = await getChannelInfo()
 
-const { SITE_URL } = Astro.locals;
+const { SITE_URL } = Astro.locals
 
-const { offset } = Astro.params;
+const { offset } = Astro.params
+const currentOffset = Number(offset)
+const nextOffset = currentOffset + 20
+const pageSeo: SeoMeta = {
+  noindex: true,
+  title: 'Legacy',
+}
 
 export const prerender = false
-
 ---
 
-<Layout channel={channel} id="main-container">
-  <slot name="header">
-    <Header channel={channel} />
-  </slot>
-  <div class="items">
-    {legacyData.slice(Number(offset), Number(offset) + 20).map(post => <LegacyItem post={post} />)}
-  </div>
+<BaseLayout channel={channel} pageClass="feed" pageType="page" seo={pageSeo}>
+  <h1 class="sr-only">Legacy</h1>
+  <ol class="posts-feed" aria-label="Legacy posts">
+    {legacyData.slice(currentOffset, nextOffset).map((post) => <li><LegacyItem post={post} /></li>)}
+  </ol>
 
-  <div class="pages-container">
-    { Number(offset) + 20 < legacyData.length &&
-      <a href={`${SITE_URL}legacyBefore/${Number(offset) + 20}`} title="Before" class="page">
-        Before
-      </a>
-    }
-
-    <div class="pages-info"></div>
-  </div>
-</Layout>
-
+  {
+    nextOffset < legacyData.length && (
+      <nav class="pagination" aria-label="Pagination">
+        <a href={`${SITE_URL}legacyBefore/${nextOffset}`} title="Older legacy posts" aria-label="Older legacy posts" class="older">
+          <span aria-hidden="true">←</span>
+        </a>
+      </nav>
+    )
+  }
+</BaseLayout>

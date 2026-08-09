@@ -1,19 +1,19 @@
 ---
-import Layout from '../layouts/base.astro'
-import Header from '../components/header.astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
 import LegacyItem from '../components/legacyItem.astro'
-import { legacyData } from '../../legacy/data.js';
+import { legacyData } from '../../legacy/data.js'
 import { getChannelInfo } from '../lib/telegram'
+import type { SeoMeta } from '../types'
 
-const channel = await getChannelInfo(Astro)
-
+const channel = await getChannelInfo()
+const pageSeo: SeoMeta = {
+  title: 'Legacy',
+}
 ---
 
-<Layout channel={channel} id="main-container">
-  <slot name="header">
-    <Header channel={channel} />
-  </slot>
-  <div class="items">
-    {legacyData.map(post => <LegacyItem post={post} />)}
-  </div>
-</Layout>
+<BaseLayout channel={channel} pageClass="feed" pageType="page" seo={pageSeo}>
+  <h1 class="sr-only">Legacy</h1>
+  <ol class="posts-feed" aria-label="Legacy posts">
+    {legacyData.map((post) => <li><LegacyItem post={post} /></li>)}
+  </ol>
+</BaseLayout>
